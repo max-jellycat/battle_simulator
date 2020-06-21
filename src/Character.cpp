@@ -4,15 +4,46 @@
 #include "Weapon.h"
 
 Character::Character()
-    : m_name("Character"), m_hp(100), m_mana(100) {}
+    : m_name("Character"), m_hp(100), m_mana(100), m_weapon(nullptr)
+{
+  m_weapon = new Weapon();
+}
+
+Character::Character(Character const &source)
+    : m_hp(source.m_hp), m_mana(source.m_mana), m_weapon(nullptr)
+{
+  m_weapon = new Weapon(*(source.m_weapon));
+}
 
 Character::Character(std::string name)
-    : m_name(name), m_hp(100), m_mana(100) {}
+    : m_name(name), m_hp(100), m_mana(100), m_weapon(nullptr)
+{
+  m_weapon = new Weapon();
+}
 
 Character::Character(std::string name, std::string weapon, int damage)
-    : m_name(name), m_hp(100), m_mana(100), m_weapon(weapon, damage) {}
+    : m_name(name), m_hp(100), m_mana(100), m_weapon(nullptr)
+{
+  m_weapon = new Weapon(weapon, damage);
+}
 
-Character::~Character() {}
+Character &Character::operator=(Character const &source)
+{
+  if (this != &source)
+  {
+    m_hp = source.m_hp;
+    m_mana = source.m_mana;
+    delete m_weapon;
+    m_weapon = new Weapon(*(source.m_weapon));
+  }
+
+  return *this;
+}
+
+Character::~Character()
+{
+  delete m_weapon;
+}
 
 void Character::takeDamage(int amount)
 {
@@ -26,7 +57,7 @@ void Character::takeDamage(int amount)
 void Character::attack(Character &target)
 {
   std::cout << m_name << " attacks " << target.m_name << "!" << std::endl;
-  target.takeDamage(m_weapon.getDamage());
+  target.takeDamage(m_weapon->getDamage());
 }
 
 void Character::drinkHealthPotion(int amount)
